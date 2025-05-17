@@ -1,0 +1,811 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import subprocess
+import os
+from googleapiclient.discovery import build
+
+app = FastAPI()
+
+class YouTubeLink(BaseModel):
+    url: str
+
+@app.post("/process")
+async def process_video(link: YouTubeLink):
+    try:
+        # Validate YouTube link
+        youtube = build("youtube", "v3", developerKey="YOUR_API_KEY")
+        video_id = link.url.split("v=")[1].split("&")[0]
+        video_response = youtube.videos().list(part="snippet", id=video_id).execute()
+        if not video_response["items"]:
+            raise HTTPException(status_code=400, detail="Invalid or private video")
+        
+        # Download video (using youtube-dl)
+        video_file = f"temp_{video_id}.mp4"
+        subprocess.run(["youtube-dl", "-o", video_file, link.url], check=True)
+        
+        # Generate 10 clips (placeholder; add AI later)
+        output_dir = f"clips_{video_id}"
+        os.makedirs(output_dir, exist_ok=True)
+        for i in range(10):
+            output_file = f"{output_dir}/clip_{i+1}.mp4"
+            subprocess.run([
+                "ffmpeg", "-i", video_file, "-ss", str(i*60), "-t", "60",
+                "-c:v", "libx264", "-c:a", "aac", output_file
+            ], check=True)
+        
+        os.remove(video_file)
+        return {"clips": [f"clip_{i+1}.mp4" for i in range(10)]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Run: uvicorn main:app --host 0.0.0.0 --port 8000
+tivity]: Received frameCompleteCallback  lastAcquiredFrameNum=1 lastAttemptedDrawFrameNum=1
+04-11 20:46:54.485  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:46:54.485  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: [DP] rdf()
+04-11 20:46:54.485  1478  1478 D ViewRootImpl@9685536[NewSurActivity]: reportDrawFinished (fn: -1) 
+04-11 20:46:54.488  1478  1478 D InsetsSourceConsumer: ensureControlAlpha: for ITYPE_STATUS_BAR on com.vmos.glb/com.vmos.activity.NewSurActivity
+04-11 20:46:54.499  1478  1478 I DecorView: notifyKeepScreenOnChanged: keepScreenOn=false
+04-11 20:46:54.499  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:54.500  1478  1478 D InsetsSourceConsumer: setRequestedVisible: visible=false, type=20, host=com.vmos.glb/com.vmos.activity.NewSurActivity, from=android.view.InsetsSourceConsumer.hide:253 android.view.InsetsController.collectSourceControls:1215 android.view.InsetsController.controlAnimationUnchecked:1077 android.view.InsetsController.applyAnimation:1456 android.view.InsetsController.applyAnimation:1437 android.view.InsetsController.hide:1006 android.view.InsetsController.hide:981 android.view.ViewRootImpl.controlInsetsForCompatibility:3147 android.view.ViewRootImpl.performTraversals:3637 android.view.ViewRootImpl.doTraversal:2924 
+04-11 20:46:54.500  1478  1478 D InsetsSourceConsumer: setRequestedVisible: visible=false, type=0, host=com.vmos.glb/com.vmos.activity.NewSurActivity, from=android.view.InsetsSourceConsumer.hide:253 android.view.InsetsSourceConsumer.hide:257 android.view.InsetsController.hideDirectly:1473 android.view.InsetsController.controlAnimationUnchecked:1139 android.view.InsetsController.applyAnimation:1456 android.view.InsetsController.applyAnimation:1437 android.view.InsetsController.hide:1006 android.view.InsetsController.hide:981 android.view.ViewRootImpl.controlInsetsForCompatibility:3147 android.view.ViewRootImpl.performTraversals:3637 
+04-11 20:46:54.512  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) req=(1080,2340)0 dur=11 res=0x1 s={true 493397622784} ch=false fn=2
+04-11 20:46:54.516  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: MSG_WINDOW_FOCUS_CHANGED 1 1
+04-11 20:46:54.530  1478  1535 I ViewRootImpl@9685536[NewSurActivity]: Resizing android.view.ViewRootImpl@ef93e1f: frame=[0,83][1080,2340] reportDraw=false forceLayout=false backDropFrame=Rect(0, 0 - 1080, 2257)
+04-11 20:46:54.597  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:54.597  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:46:54.597  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:54.600  1478  1478 E PRETTYLOGGER: ║ NewPermissionsUtils.isPermissions  (NewPermissionsUtils.java:171)
+04-11 20:46:54.600  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:54.600  1478  1478 E PRETTYLOGGER: ║ 这个权限没有：android.permission.ACCESS_COARSE_LOCATION
+04-11 20:46:54.600  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:54.684  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: setView = com.android.internal.policy.DecorView@aef76f TM=true
+04-11 20:46:54.685  1478  1478 D InputMethodManager: startInputInner - Id : 0
+04-11 20:46:54.685  1478  1478 I InputMethodManager: startInputInner - mService.startInputOrWindowGainedFocus
+04-11 20:46:54.787  1478  1492 I ViewRootImpl@64d11b1[NewSurActivity]: Resizing android.view.ViewRootImpl@f901e70: frame=[0,827][1080,1512] reportDraw=true forceLayout=false backDropFrame=Rect(0, 0 - 1080, 685)
+04-11 20:46:54.792  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: Relayout returned: old=(0,0,1080,2340) new=(0,827,1080,1512) req=(1079,685)0 dur=18 res=0x7 s={true 493397630976} ch=true fn=-1
+04-11 20:46:54.793  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:46:54.802  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11442 android.view.ViewRootImpl.performTraversals:4198 android.view.ViewRootImpl.doTraversal:2924 
+04-11 20:46:54.802  1478  1478 D ViewRootImpl@64d11b1[NewSurActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=false reportNextDraw=true hasBlurUpdates=false
+04-11 20:46:54.802  1478  1478 D ViewRootImpl@64d11b1[NewSurActivity]: Creating frameCompleteCallback
+04-11 20:46:54.809  1478  1614 D ViewRootImpl@64d11b1[NewSurActivity]: Received frameDrawingCallback frameNum=1. Creating transactionCompleteCallback=false
+04-11 20:46:54.814  1478  1540 D ViewRootImpl@64d11b1[NewSurActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=1 lastAttemptedDrawFrameNum=1
+04-11 20:46:54.815  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:46:54.815  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: [DP] rdf()
+04-11 20:46:54.815  1478  1478 D ViewRootImpl@64d11b1[NewSurActivity]: reportDrawFinished (fn: -1) 
+04-11 20:46:54.816  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: handleResized, msg = 4 frames=ClientWindowFrames{frame=[0,83][1080,2340] display=[0,83][1080,2340] backdrop=[0,0][1080,2257]} forceNextWindowRelayout=false displayId=0 frameChanged=true backdropFrameChanged=true configChanged=false displayChanged=false mNextDrawUseBlastSync=false mergedConfiguration={mGlobalConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.777 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0} mOverrideConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.1 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0}}
+04-11 20:46:54.871  1478  1492 I ViewRootImpl@64d11b1[NewSurActivity]: Resizing android.view.ViewRootImpl@f901e70: frame=[0,869][1080,1471] reportDraw=true forceLayout=true backDropFrame=Rect(0, 0 - 1080, 602)
+04-11 20:46:54.877  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: Relayout returned: old=(0,827,1080,1512) new=(0,869,1080,1471) req=(1079,602)0 dur=58 res=0x81 s={true 493397630976} ch=false fn=2
+04-11 20:46:54.877  1478  1478 D ViewRootImpl@64d11b1[NewSurActivity]: Relayout called with blastSync
+04-11 20:46:54.877  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11442 android.view.ViewRootImpl.performTraversals:3703 android.view.ViewRootImpl.doTraversal:2924 
+04-11 20:46:54.878  1478  1478 D ViewRootImpl@64d11b1[NewSurActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=true reportNextDraw=true hasBlurUpdates=false
+04-11 20:46:54.878  1478  1478 D ViewRootImpl@64d11b1[NewSurActivity]: Creating frameCompleteCallback
+04-11 20:46:54.878  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:46:54.878  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:46:54.879  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:46:54.880  1478  1613 D ViewRootImpl@64d11b1[NewSurActivity]: Received frameDrawingCallback frameNum=2. Creating transactionCompleteCallback=true
+04-11 20:46:54.889  1478  1540 D ViewRootImpl@64d11b1[NewSurActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=2 lastAttemptedDrawFrameNum=2
+04-11 20:46:54.910  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: Relayout returned: old=(0,83,1080,2340) new=(0,83,1080,2340) req=(1080,2257)0 dur=19 res=0x1 s={true 493397622784} ch=false fn=4
+04-11 20:46:54.912  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:46:54.912  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:46:54.914  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:46:54.915  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:46:54.915  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: [DP] rdf()
+04-11 20:46:54.915  1478  1478 D ViewRootImpl@64d11b1[NewSurActivity]: reportDrawFinished (fn: 2) 
+04-11 20:46:54.916  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: handleResized, msg = 5 frames=ClientWindowFrames{frame=[0,827][1080,1512] display=[0,0][1080,2340] backdrop=[0,0][1080,685]} forceNextWindowRelayout=false displayId=0 frameChanged=true backdropFrameChanged=true configChanged=false displayChanged=false mNextDrawUseBlastSync=true mergedConfiguration={mGlobalConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.777 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0} mOverrideConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.1 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0}}
+04-11 20:46:54.917  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: handleResized: set mNeedReportNextDraw = true
+04-11 20:46:54.917  1478  1478 W ViewRootImpl@64d11b1[NewSurActivity]: Can't perform draw while waiting for a transaction complete
+04-11 20:46:54.924  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: handleResized, msg = 5 frames=ClientWindowFrames{frame=[0,869][1080,1471] display=[0,0][1080,2340] backdrop=[0,0][1080,602]} forceNextWindowRelayout=true displayId=0 frameChanged=true backdropFrameChanged=true configChanged=false displayChanged=false mNextDrawUseBlastSync=true mergedConfiguration={mGlobalConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.777 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0} mOverrideConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.1 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0}}
+04-11 20:46:54.924  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: handleResized: set mNeedReportNextDraw = true
+04-11 20:46:54.924  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: MSG_WINDOW_FOCUS_CHANGED 0 1
+04-11 20:46:54.924  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: MSG_WINDOW_FOCUS_CHANGED 1 1
+04-11 20:46:54.925  1478  1478 D InputMethodManager: startInputInner - Id : 0
+04-11 20:46:54.925  1478  1478 I InputMethodManager: startInputInner - mService.startInputOrWindowGainedFocus
+04-11 20:46:54.942  1478  1478 W ViewRootImpl@64d11b1[NewSurActivity]: Can't perform draw while waiting for a transaction complete
+04-11 20:46:54.956  1478  1634 D ViewRootImpl@64d11b1[NewSurActivity]: Received transactionCompleteCallback frameNum=2
+04-11 20:46:54.957  1478  1478 D ViewRootImpl@64d11b1[NewSurActivity]: Scheduling a traversal=true due to a previous skipped traversal.
+04-11 20:46:54.982  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: Relayout returned: old=(0,869,1080,1471) new=(0,869,1080,1471) req=(1079,602)0 dur=7 res=0x1 s={true 493397630976} ch=false fn=3
+04-11 20:46:54.982  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:46:54.982  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:46:54.983  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:46:55.091  1478  1478 D InsetsSourceConsumer: ensureControlPosition: Point(0, 2214) for ITYPE_NAVIGATION_BAR on com.vmos.glb/com.vmos.activity.NewSurActivity from android.view.InsetsSourceConsumer.notifyAnimationFinished:384
+04-11 20:46:55.314  1478  8460 E reader_network_resp: https://osservice.vmos.com/gather/trajectory/save?s=e8be803a782e7a64fa02026867f7daae&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384614359&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:55.314  1478  8460 E reader_network_resp: timestamp: 1744384614360
+04-11 20:46:55.314  1478  8460 E reader_network_resp: HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "osservice.vmos.com": No address associated with hostname
+04-11 20:46:55.314  1478  8460 E reader_network_resp:  
+04-11 20:46:55.314  1478  8461 E reader_network_resp: https://osservice.vmos.com/login/uuid/save?s=16f5c2c81c29c875b0dc2f22c35c5f29&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384614364&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:55.314  1478  8461 E reader_network_resp: timestamp: 1744384614366
+04-11 20:46:55.314  1478  8461 E reader_network_resp: HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "osservice.vmos.com": No address associated with hostname
+04-11 20:46:55.314  1478  8461 E reader_network_resp:  
+04-11 20:46:56.020  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 0
+04-11 20:46:56.021  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:56.021  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:56.087  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 1
+04-11 20:46:56.087  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:56.088  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:56.227  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 0
+04-11 20:46:56.227  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:56.227  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:56.292  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 1
+04-11 20:46:56.292  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:56.292  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:56.584  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 0
+04-11 20:46:56.585  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:56.585  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:56.633  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:56.633  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:56.634  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:56.634  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:56.839  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme key 0
+04-11 20:46:56.842  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme key 1
+04-11 20:46:57.866  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 0
+04-11 20:46:57.866  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:57.866  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:57.916  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 1
+04-11 20:46:57.917  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:57.917  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:58.037  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 0
+04-11 20:46:58.037  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:58.037  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:58.122  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 1
+04-11 20:46:58.122  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:58.123  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:58.327  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 0
+04-11 20:46:58.328  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:58.328  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:58.394  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: ViewPostIme pointer 1
+04-11 20:46:58.394  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:46:58.394  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:46:58.402  1478  1478 E RendererActivity: requestPermission 
+04-11 20:46:58.409  1478  1478 E RendererActivity: else 
+04-11 20:46:58.410  1478  1478 E RendererActivity: else 
+04-11 20:46:58.410  1478  1478 E RendererActivity: else 
+04-11 20:46:58.410  1478  1478 E RendererActivity: else 
+04-11 20:46:58.410  1478  1478 E RendererActivity: else 
+04-11 20:46:58.414  1478  1478 E RendererActivity: isEmpty 
+04-11 20:46:58.616  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:58.616  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:46:58.616  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.617  1478  1478 E PRETTYLOGGER: ║ PermissionAdModel$1.handleMessage  (PermissionAdModel.java:102)
+04-11 20:46:58.617  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.617  1478  1478 E PRETTYLOGGER: ║ PermissionAdModel 333333333333333
+04-11 20:46:58.617  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:58.642  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:58.643  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:46:58.643  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.643  1478  1478 E PRETTYLOGGER: ║ NewPermissionsUtils.isPermissions  (NewPermissionsUtils.java:171)
+04-11 20:46:58.643  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.643  1478  1478 E PRETTYLOGGER: ║ 这个权限没有：android.permission.ACCESS_COARSE_LOCATION
+04-11 20:46:58.643  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:58.644  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@aef76f[NewSurActivity]
+04-11 20:46:58.644  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:46:58.645  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:46:58.645  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:46:58.645  1478  1478 I ViewRootImpl@64d11b1[NewSurActivity]: dispatchDetachedFromWindow
+04-11 20:46:58.681  1478  1478 D InputTransport: Input channel destroyed: '31e0a7a', fd=137
+04-11 20:46:58.683  1478  1478 E preferencesSaveCall: saveParam: PermissionAdModel
+04-11 20:46:58.710  1478  1478 D CrashReport: >>> com.vmos.activity.NewSurActivity onPaused <<<
+04-11 20:46:58.711  1478  1478 I CrashReport-Native: Set native info: isAppForeground(false)
+04-11 20:46:58.777  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: MSG_WINDOW_FOCUS_CHANGED 1 1
+04-11 20:46:58.777  1478  1478 D InputMethodManager: startInputInner - Id : 0
+04-11 20:46:58.777  1478  1478 I InputMethodManager: startInputInner - mService.startInputOrWindowGainedFocus
+04-11 20:46:58.797  1478  1478 I AppCompatDelegate: The Activity's LayoutInflater already has a Factory installed so we can not install AppCompat's
+04-11 20:46:58.797  1478  1478 D CrashReport: >>> com.vmos.glb.LauncherActivity onCreated <<<
+04-11 20:46:58.805  1478  1478 I DecorView: [INFO] isPopOver=false, config=true
+04-11 20:46:58.805  1478  1478 I DecorView: updateCaptionType >> DecorView@73037ff[], isFloating=false, isApplication=true, hasWindowControllerCallback=true, hasWindowDecorCaption=false
+04-11 20:46:58.805  1478  1478 D DecorView: setCaptionType = 0, this = DecorView@73037ff[]
+04-11 20:46:58.806  1478  1478 I DecorView: getCurrentDensityDpi: from real metrics. densityDpi=420 msg=resources_loaded
+04-11 20:46:58.810  1478  1478 E trajectoryType: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:58.810  1478  1478 E trajectoryType: ║ Thread: main
+04-11 20:46:58.810  1478  1478 E trajectoryType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.810  1478  1478 E trajectoryType: ║ PUserTrajectory.postEventReport  (PUserTrajectory.java:41)
+04-11 20:46:58.810  1478  1478 E trajectoryType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.810  1478  1478 E trajectoryType: ║ 11
+04-11 20:46:58.810  1478  1478 E trajectoryType: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:58.811  1478  1478 D PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:58.811  1478  1478 D PRETTYLOGGER: ║ Thread: main
+04-11 20:46:58.811  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.811  1478  1478 D PRETTYLOGGER: ║ ApiManager$3.accept  (ApiManager.java:107)
+04-11 20:46:58.811  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.811  1478  1478 D PRETTYLOGGER: ║ doOnSubscribe（Okhttp）：main
+04-11 20:46:58.811  1478  1478 D PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:58.812  1478  8461 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:58.813  1478  8461 E VersionHelper: getRomVersion 
+04-11 20:46:58.813  1478  8461 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:58.813  1478  8461 D xiaozhishi_network_req: 1744384618813--intercept
+04-11 20:46:58.813  1478  1478 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:58.813  1478  8461 E reader_network_req: https://osservice.vmos.com/gather/trajectory/save?s=e98ae399ac7d3a1a672fc0e844bd5e0e&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384618812&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:58.813  1478  8461 E reader_network_req: timestamp: 1744384618813
+04-11 20:46:58.813  1478  8461 E reader_network_req: thread: 138775096
+04-11 20:46:58.813  1478  8461 E reader_network_req: Content-Type: application/json; charset=UTF-8
+04-11 20:46:58.813  1478  8461 E reader_network_req: Content-Length: 71
+04-11 20:46:58.813  1478  8461 E reader_network_req: androidApi: 1.0.31
+04-11 20:46:58.813  1478  8461 E reader_network_req: Access-Token: 
+04-11 20:46:58.813  1478  8461 E reader_network_req: User-ID: 917ec898382a587b
+04-11 20:46:58.813  1478  8461 E reader_network_req: Content-Type: application/json; charset=utf-8
+04-11 20:46:58.813  1478  8461 E reader_network_req: requestBody: {"msg":"y2ND/T7KgEpS MslAfL4aTtyKd65Lmd0\n","createTime":1744384618810}
+04-11 20:46:58.813  1478  8461 E reader_network_req: https://osservice.vmos.com/gather/trajectory/save?s=e98ae399ac7d3a1a672fc0e844bd5e0e&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384618812&u=917ec898382a587b&c=glb&v=100031&rv=0?msg=y2ND/T7KgEpS MslAfL4aTtyKd65Lmd0
+04-11 20:46:58.813  1478  8461 E reader_network_req: &createTime=1744384618810
+04-11 20:46:58.813  1478  8461 E reader_network_req: REQUEST END (71-byte body)
+04-11 20:46:58.813  1478  8461 E reader_network_req:  
+04-11 20:46:58.813  1478  1478 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:58.813  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:58.813  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:46:58.813  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.813  1478  1478 E PRETTYLOGGER: ║ LauncherActivity.onCreate  (LauncherActivity.java:120)
+04-11 20:46:58.813  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:58.813  1478  1478 E PRETTYLOGGER: ║ uuid=917ec898382a587b
+04-11 20:46:58.813  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:58.814  1478  1478 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:58.820  1478  8461 E reader_network_resp: https://osservice.vmos.com/gather/trajectory/save?s=e98ae399ac7d3a1a672fc0e844bd5e0e&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384618812&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:58.820  1478  8461 E reader_network_resp: timestamp: 1744384618813
+04-11 20:46:58.820  1478  8461 E reader_network_resp: HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "osservice.vmos.com": No address associated with hostname
+04-11 20:46:58.820  1478  8461 E reader_network_resp:  
+04-11 20:46:59.800  1478  1478 D PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.800  1478  1478 D PRETTYLOGGER: ║ Thread: main
+04-11 20:46:59.800  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.800  1478  1478 D PRETTYLOGGER: ║ ApiManager$3.accept  (ApiManager.java:107)
+04-11 20:46:59.801  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.801  1478  1478 D PRETTYLOGGER: ║ doOnSubscribe（Okhttp）：main
+04-11 20:46:59.801  1478  1478 D PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.802  1478  8460 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:59.802  1478  8460 E VersionHelper: getRomVersion 
+04-11 20:46:59.802  1478  8460 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:59.802  1478  8460 D xiaozhishi_network_req: 1744384619802--intercept
+04-11 20:46:59.802  1478  8460 E reader_network_req: https://osservice.vmos.com/gather/apps/save?s=68f26c26cc5a7296fd9647e875a3bcad&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619801&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:59.802  1478  8460 E reader_network_req: timestamp: 1744384619802
+04-11 20:46:59.802  1478  8460 E reader_network_req: thread: 84482577
+04-11 20:46:59.802  1478  8460 E reader_network_req: Content-Type: application/json; charset=UTF-8
+04-11 20:46:59.802  1478  8460 E reader_network_req: Content-Length: 4275
+04-11 20:46:59.802  1478  8460 E reader_network_req: androidApi: 1.0.31
+04-11 20:46:59.802  1478  8460 E reader_network_req: Access-Token: 
+04-11 20:46:59.802  1478  8460 E reader_network_req: User-ID: 917ec898382a587b
+04-11 20:46:59.802  1478  8460 E reader_network_req: Content-Type: application/json; charset=utf-8
+04-11 20:46:59.802  1478  8460 E reader_network_req: requestBody: {"msg":"uSQSQFatrh0pPK/qKpuDFXpTviFW1b3vqaCS9ADUk0MdzW7ccUknQA625pcGyDHlS TkSWlHZgp0\ns0Zi6qiB7XohSoKt0KxUI T8gRPjfeS8LrA420Rm7Ob9m2B7Z7nv1gF ICCNtEplKyxWEQURO9nX\n/sXFW 776fOjEAZZYoa2AyYdInRP g0cjy5W Sky6t M65o3lE0DJvjnavMBmHjah1oWO/9fginB\n4s1zrmJE8u3klWg/C0iCtePcRBFgAFArMRqcvgLiOOuhFuivBs0itHOOP4nVfy0Gq39mVE2k7d43\nX/0nMfyNF6FfSgnt9QFgjOQaSdqwZmnnVdk60AaVOPyS6EIKW5sD9sM2NT2 RhTYn54yfzxlalGi\n6CWLV8x9AT8mprDbhR1R95hrgi0G3LRhc0zxbcqTg8ol4Xe5SVh/vmPR/MvNyulM44r0AhujCIT7\nnHy3awjBft5v39tvo6Vt4r76OV8mROvyhrvNoN3IMoW4laoI2 IGLw67ty49Vzqj4K2wD8j6qfyN\n7ImGiDhKZ6zX/45a8nw1/CTNVN14qE0gCrFlmo3hlE6RZkGYeBKumkT696gDYayS9NigO48si88j\n18jf7kke3aZ3IMsjkjwJ42byIJQQH1xn7ZUH SeSu5MgOPsvoL 1A/nG4iX6lBfrFGGmT02vRIcL\n7bmFR k97PmftwnnOOE8gS3oykktL0fwlWU2nn5YTDkWoyJjEgRdVnVYIvHoT sZsxzKeoCEpXdg\nYIYNKGDydwoGY0KrNBH/5a/husE5supzBWxTY2FsdkoOQLWn1UGN1McC4yDp2yr4VuwYKVHCRfq8\nFNeEPNyk4VJusadIvnRJyFPnr0A37hg5bAw3wlPcLGv8CZqysdbCyVzuTLDwftHwNfhoiBd6bJ8Y\nEFglMsi9CZwJnvpZ8/jWLKbVZqCy2wQD52sHrOHGxVB3j7sRT33vE6V2oI79tqP0jEJ7Xq1xdt7n\nmAdb/ZQvvmQu2IVqHW 5t5h6wmmbzCvP6L6PCbSeBqQFZ3g58zbkeLPK6LBr0IkCAh3ftknAUQgh\n02fhVyaXXq0SOdiu6q1xWEQe2TIg0C5L9EMApd7N8ICcIldco/Zgen92 pOVB7uCFqL/rL02xyJW\nXkWb nszALChEH7400/VBdxPhHID7riV4itEhmliKMYPNwiBLuS dZqt4ZpSKOEzTsV3Z8snumPt\nBAAcKFjfSUS8eHW0hIiQ R5DgPR dXhiWPgwycyBgWO4WQJtoySLmerxzRYiQzKEyIjzhpcKQi3k\nFTuO7hFLeSeQ42rk9yVfpGWmvblJep4vlP0knR4sQBnTme1xV/4QUrNQF7p35WxcaA4id7R l/BC\nj7dM5QEBW8kAWgJUJm9CYyIHDz9hYACiyk D0e/P8dXyZdOBQy5aPVyO4oyydSqnkhfelZTUlCSk\nq DhjAKvKxrMjTP2Go orrA8MlkM82CESxMyVq4xT4nY0 ohY9mtcUO8F3uchgbtbc/9gLQgYzy0\nPClj/xeToi6himyZ5fraGDgslnFiW32L3D2UwTViODCYCU1ijUze5zirKma3y6WdYKkte4Iud3RY\nk66HIhONUJCQkZW0U6aV4o1QuqTWIqw3qujxexIPQ0zkSGCU A6FifGmHZTk9TsKKh2AfdSDOqae\ndjWu2/qLK1vLQs/Zc4W3/GmG/lQ13novOSIvlOoqjgcLOOOxmTbLCUlvPHZHscJGa5zz063sFL4R\nGFp2aePtQPTKBDRwnZ8N4Kw7UPMVIqLjp oxs2AEaaIsbP4EBV/4gigfa7bV ymnbkiSXpSPdKZu\nBq/l11z QdlNiAh9WzDabY9Nesk6aEEMAxskcZRiGqA3Ef5RVHwX4INbbm5EpByOGjMqiptn8eCk\nWy5OyWZk87K5T350 s6FeTEj3/QpOyIzCO5wW88xHUd3WU59D gmyH1vjGLjgDfkIOoxfNrxUyxr\nipbXuedkKwMySEuZD0mWnfE zfAZl6H/M E6NGRrZPSfMkwc Idm7LhU 9K9Z9L69CC66Xb9TNWB\nKbS/ex//f 6STRAyga5rO02RUUKBTWPXKyKVLYyoWmARNaort1vtkE0NiBhMrvwlKF76I pZiQr3\nKpSnScue9o jJuZwzkkaabAUhNY0ZPmRxdb6 nNl0oLTiNqVPj7Aep8ybU7DhTdWk3L86/qHU0MN\nyg5xdFeG 9OhHimeMsqVM1kKIG4s4VD35fBmqBZz6QkQJlIY25  xkN1EoJLRHgCeocSo6CzL8ky\nlkaY0JL4u0drB6srXiRa4MjvBIwpPSR2st/0Or3tsi7OIAv2iKEJ9SBQiH/Dp4zUUb2a2rHWpzbx\nhvVf3kQU5nhx7MqOVscVEp1S108Gn4EVzUGkTckZZhJqNn2fm OBxCRckPWJ/YH9OHBtrXZS39yR\nKiPsReUlkgI3uuLLp4YCRNAB5qxdstdPPDn7PdXlqO6EwXt0GkgDUGnE7oNCOkQpjZw5UGN8zo n\nfeSn4SDcpe7FjlaObywgzpiwnT0rO0z2MmQ9GJDyK5XBK7LlfXEmhtbvminigM046rFJpWf51Qxs\nJh1Ze/6wJpDFbv36B/kR2tsX/uU6sUMdx8nkHH9kQ9SMMSqiUe35XGeRKfGk3PDJZD1UCy2RJ1q \nzlxI5BgQTqrV8H5M8oiFrWNBHQ1uSfMbQgND3zpmHkbereE6RAqMLvYLjQmnuKhtc9z0ARBkmrku\nLbKzMZzpp6Uoa55bkrUiV2DxIMkxOmH8yKnQ2OSXsoXqKij2O02Xv0TAL8f dzFDoFG 6K4I0ZnG\nBYVpRHvgq/iBEOG1wtNpMy6YilQUld07HF/o0CY7/x6TITd5cmzH6W3Tu2HJ8ScsL3cByZGe6sqX\n8YUofoBTzb7xgEqDpuk1n37duIEO7UFsA/6GUEY0Szoj03GoyUaf5CfoqtGJSBZcRFq9i4eZlibM\nfEE5R7t3CAglJOFYvyHyQLInRmEMOVWcV1ZCuHvtjRmJzTO0kiYPsPO2lFbQJAlxc/LUWQbLFYGV\nxNWhX6nrrTvjusFacVaVFsdehAHfdfk7DQt3CtE0XlejQuZsuWpZGE8k3PUoeD2eXu8AtnMOrH2y\nycIhycYQD4KIb1HxiB2W/SURgNZKjN691UdaS9cmR2YXVgawDfmwRyVbryAdpoN2Og1EehZ5iFmB\nyPjr1gde1MhPRxwYOEDo9cV0HNSd xGToAzst5SCGeKooMKOSZrYNjbQumfz ORUDgBHdqESkWp8\nHeucQ4R589s/c3b5wy9upYtmYxqTibyszcUBckYiVaNHVe9KBfyDjJFsF4NDVgjkRIWHw5Q7Ux3d\n5WnSzpqJc kcP7ZylE59ruv/f7GU2YnXjPsH3IGURQlh9N01EuTrW5Xi4pgX40UOMTLXbWOYEutd\nDVF93FtgD6jRJQyZankojSqsGkdN2ap0yCsYkcw7J/WHSBPnAYSYyByfOUH8MuYcPAf6rYe8mZ5J\nofYniBSXEXyKhuGNl/VPJvR7c3afo9YOrUzm6e/2f/KFiVzVLuKOZ6VtKXY0kF7ni0BbO Ihgubp\nGUyLvUSHHPgHPmrSMP4gLPoD2w2O iXm/zlQQmKQyJvgsPBq4PC9trRt3OwoRZ7PeHO4VJM4GB w\nI2WYFRfVZzcd6XTWRP02L9GlCC rKkMjZ9lOCImJ7 DngAXiwmwwaVxWbbOL9gkb0pjs6zAASlTV\nUyk9vt/0hCP4tYRO5Bh0CLW2e30fu7gjkMNTAhlAwiI6GnXvc9DarHzH8971e0sqYzuZ GeQPKJb\nRYqF1S akdJP0hxxuqMVezUzJIbdfQX7UQLbKW4JkDPZ zGimGIkelpCvm9GmIBJT14lUToKPmer\nN 97nn6pvBCk0gvd
+04-11 20:46:59.802  1478  8460 E reader_network_req: https://osservice.vmos.com/gather/apps/save?s=68f26c26cc5a7296fd9647e875a3bcad&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619801&u=917ec898382a587b&c=glb&v=100031&rv=0?msg=uSQSQFatrh0pPK/qKpuDFXpTviFW1b3vqaCS9ADUk0MdzW7ccUknQA625pcGyDHlS TkSWlHZgp0
+04-11 20:46:59.802  1478  8460 E reader_network_req: s0Zi6qiB7XohSoKt0KxUI T8gRPjfeS8LrA420Rm7Ob9m2B7Z7nv1gF ICCNtEplKyxWEQURO9nX
+04-11 20:46:59.802  1478  8460 E reader_network_req: /sXFW 776fOjEAZZYoa2AyYdInRP g0cjy5W Sky6t M65o3lE0DJvjnavMBmHjah1oWO/9fginB
+04-11 20:46:59.802  1478  8460 E reader_network_req: 4s1zrmJE8u3klWg/C0iCtePcRBFgAFArMRqcvgLiOOuhFuivBs0itHOOP4nVfy0Gq39mVE2k7d43
+04-11 20:46:59.802  1478  8460 E reader_network_req: X/0nMfyNF6FfSgnt9QFgjOQaSdqwZmnnVdk60AaVOPyS6EIKW5sD9sM2NT2 RhTYn54yfzxlalGi
+04-11 20:46:59.802  1478  8460 E reader_network_req: 6CWLV8x9AT8mprDbhR1R95hrgi0G3LRhc0zxbcqTg8ol4Xe5SVh/vmPR/MvNyulM44r0AhujCIT7
+04-11 20:46:59.802  1478  8460 E reader_network_req: nHy3awjBft5v39tvo6Vt4r76OV8mROvyhrvNoN3IMoW4laoI2 IGLw67ty49Vzqj4K2wD8j6qfyN
+04-11 20:46:59.802  1478  8460 E reader_network_req: 7ImGiDhKZ6zX/45a8nw1/CTNVN14qE0gCrFlmo3hlE6RZkGYeBKumkT696gDYayS9NigO48si88j
+04-11 20:46:59.802  1478  8460 E reader_network_req: 18jf7kke3aZ3IMsjkjwJ42byIJQQH1xn7ZUH SeSu5MgOPsvoL 1A/nG4iX6lBfrFGGmT02vRIcL
+04-11 20:46:59.802  1478  8460 E reader_network_req: 7bmFR k97PmftwnnOOE8gS3oykktL0fwlWU2nn5YTDkWoyJjEgRdVnVYIvHoT sZsxzKeoCEpXdg
+04-11 20:46:59.802  1478  8460 E reader_network_req: YIYNKGDydwoGY0KrNBH/5a/husE5supzBWxTY2FsdkoOQLWn1UGN1McC4yDp2yr4VuwYKVHCRfq8
+04-11 20:46:59.802  1478  8460 E reader_network_req: FNeEPNyk4VJusadIvnRJyFPnr0A37hg5bAw3wlPcLGv8CZqysdbCyVzuTLDwftHwNfhoiBd6bJ8Y
+04-11 20:46:59.802  1478  8460 E reader_network_req: EFglMsi9CZwJnvpZ8/jWLKbVZqCy2wQD52sHrOHGxVB3j7sRT33vE6V2oI79tqP0jEJ7Xq1xdt7n
+04-11 20:46:59.802  1478  8460 E reader_network_req: mAdb/ZQvvmQu2IVqHW 5t5h6wmmbzCvP6L6PCbSeBqQFZ3g58zbkeLPK6LBr0IkCAh3ftknAUQgh
+04-11 20:46:59.802  1478  8460 E reader_network_req: 02fhVyaXXq0SOdiu6q1xWEQe2TIg0C5L9EMApd7N8ICcIldco/Zgen92 pOVB7uCFqL/rL02xyJW
+04-11 20:46:59.802  1478  8460 E reader_network_req: XkWb nszALChEH7400/VBdxPhHID7riV4itEhmliKMYPNwiBLuS dZqt4ZpSKOEzTsV3Z8snumPt
+04-11 20:46:59.802  1478  8460 E reader_network_req: BAAcKFjfSUS8eHW0hIiQ R5DgPR dXhiWPgwycyBgWO4WQJtoySLmerxzRYiQzKEyIjzhpcKQi3k
+04-11 20:46:59.802  1478  8460 E reader_network_req: FTuO7hFLeSeQ42rk9yVfpGWmvblJep4vlP0knR4sQBnTme1xV/4QUrNQF7p35WxcaA4id7R l/BC
+04-11 20:46:59.802  1478  8460 E reader_network_req: j7dM5QEBW8kAWgJUJm9CYyIHDz9hYACiyk D0e/P8dXyZdOBQy5aPVyO4oyydSqnkhfelZTUlCSk
+04-11 20:46:59.802  1478  8460 E reader_network_req: q DhjAKvKxrMjTP2Go orrA8MlkM82CESxMyVq4xT4nY0 ohY9mtcUO8F3uchgbtbc/9gLQgYzy0
+04-11 20:46:59.802  1478  8460 E reader_network_req: PClj/xeToi6himyZ5fraGDgslnFiW32L3D2UwTViODCYCU1ijUze5zirKma3y6WdYKkte4Iud3RY
+04-11 20:46:59.802  1478  8460 E reader_network_req: k66HIhONUJCQkZW0U6aV4o1QuqTWIqw3qujxexIPQ0zkSGCU A6FifGmHZTk9TsKKh2AfdSDOqae
+04-11 20:46:59.802  1478  8460 E reader_network_req: djWu2/qLK1vLQs/Zc4W3/GmG/lQ13novOSIvlOoqjgcLOOOxmTbLCUlvPHZHscJGa5zz063sFL4R
+04-11 20:46:59.802  1478  8460 E reader_network_req: GFp2aePtQPTKBDRwnZ8N4Kw7UPMVIqLjp oxs2AEaaIsbP4EBV/4gigfa7bV ymnbkiSXpSPdKZu
+04-11 20:46:59.802  1478  8460 E reader_network_req: Bq/l11z QdlNiAh9WzDabY9Nesk6aEEMAxskcZRiGqA3Ef5RVHwX4INbbm5EpByOGjMqiptn8eCk
+04-11 20:46:59.802  1478  8460 E reader_network_req: Wy5OyWZk87K5T350 s6FeTEj3/QpOyIzCO5wW88xHUd3WU59D gmyH1vjGLjgDfkIOoxfNrxUyxr
+04-11 20:46:59.802  1478  8460 E reader_network_req: ipbXuedkKwMySEuZD0mWnfE zfAZl6H/M E6NGRrZPSfMkwc Idm7LhU 9K9Z9L69CC66Xb9TNWB
+04-11 20:46:59.802  1478  8460 E reader_network_req: KbS/ex//f 6STRAyga5rO02RUUKBTWPXKyKVLYyoWmARNaort1vtkE0NiBhMrvwlKF76I pZiQr3
+04-11 20:46:59.802  1478  8460 E reader_network_req: KpSnScue9o jJuZwzkkaabAUhNY0ZPmRxdb6 nNl0oLTiNqVPj7Aep8ybU7DhTdWk3L86/qHU0MN
+04-11 20:46:59.802  1478  8460 E reader_network_req: yg5xdFeG 9OhHimeMsqVM1kKIG4s4VD35fBmqBZz6QkQJlIY25  xkN1EoJLRHgCeocSo6CzL8ky
+04-11 20:46:59.802  1478  8460 E reader_network_req: lkaY0JL4u0drB6srXiRa4MjvBIwpPSR2st/0Or3tsi7OIAv2iKEJ9SBQiH/Dp4zUUb2a2rHWpzbx
+04-11 20:46:59.802  1478  8460 E reader_network_req: hvVf3kQU5nhx7MqOVscVEp1S108Gn4EVzUGkTckZZhJqNn2fm OBxCRckPWJ/YH9OHBtrXZS39yR
+04-11 20:46:59.802  1478  8460 E reader_network_req: KiPsReUlkgI3uuLLp4YCRNAB5qxdstdPPDn7PdXlqO6EwXt0GkgDUGnE7oNCOkQpjZw5UGN8zo n
+04-11 20:46:59.802  1478  8460 E reader_network_req: feSn4SDcpe7FjlaObywgzpiwnT0rO0z2MmQ9GJDyK5XBK7LlfXEmhtbvminigM046rFJpWf51Qxs
+04-11 20:46:59.802  1478  8460 E reader_network_req: Jh1Ze/6wJpDFbv36B/kR2tsX/uU6sUMdx8nkHH9kQ9SMMSqiUe35XGeRKfGk3PDJZD1UCy2RJ1q 
+04-11 20:46:59.802  1478  8460 E reader_network_req: zlxI5BgQTqrV8H5M8oiFrWNBHQ1uSfMbQgND3zpmHkbereE6RAqMLvYLjQmnuKhtc9z0ARBkmrku
+04-11 20:46:59.802  1478  8460 E reader_network_req: LbKzMZzpp6Uoa55bkrUiV2DxIMkxOmH8yKnQ2OSXsoXqKij2O02Xv0TAL8f dzFDoFG 6K4I0ZnG
+04-11 20:46:59.802  1478  8460 E reader_network_req: BYVpRHvgq/iBEOG1wtNpMy6YilQUld07HF/o0CY7/x6TITd5cmzH6W3Tu2HJ8ScsL3cByZGe6sqX
+04-11 20:46:59.802  1478  8460 E reader_network_req: 8YUofoBTzb7xgEqDpuk1n37duIEO7UFsA/6GUEY0Szoj03GoyUaf5CfoqtGJSBZcRFq9i4eZlibM
+04-11 20:46:59.802  1478  8460 E reader_network_req: fEE5R7t3CAglJOFYvyHyQLInRmEMOVWcV1ZCuHvtjRmJzTO0kiYPsPO2lFbQJAlxc/LUWQbLFYGV
+04-11 20:46:59.802  1478  8460 E reader_network_req: xNWhX6nrrTvjusFacVaVFsdehAHfdfk7DQt3CtE0XlejQuZsuWpZGE8k3PUoeD2eXu8AtnMOrH2y
+04-11 20:46:59.802  1478  8460 E reader_network_req: ycIhycYQD4KIb1HxiB2W/SURgNZKjN691UdaS9cmR2YXVgawDfmwRyVbryAdpoN2Og1EehZ5iFmB
+04-11 20:46:59.802  1478  8460 E reader_network_req: yPjr1gde1MhPRxwYOEDo9cV0HNSd xGToAzst5SCGeKooMKOSZrYNjbQumfz ORUDgBHdqESkWp8
+04-11 20:46:59.802  1478  8460 E reader_network_req: HeucQ4R589s/c3b5wy9upYtmYxqTibyszcUBckYiVaNHVe9KBfyDjJFsF4NDVgjkRIWHw5Q7Ux3d
+04-11 20:46:59.802  1478  8460 E reader_network_req: 5WnSzpqJc kcP7ZylE59ruv/f7GU2YnXjPsH3IGURQlh9N01EuTrW5Xi4pgX40UOMTLXbWOYEutd
+04-11 20:46:59.802  1478  8460 E reader_network_req: DVF93FtgD6jRJQyZankojSqsGkdN2ap0yCsYkcw7J/WHSBPnAYSYyByfOUH8MuYcPAf6rYe8mZ5J
+04-11 20:46:59.802  1478  8460 E reader_network_req: ofYniBSXEXyKhuGNl/VPJvR7c3afo9YOrUzm6e/2f/KFiVzVLuKOZ6VtKXY0kF7ni0BbO Ihgubp
+04-11 20:46:59.802  1478  8460 E reader_network_req: GUyLvUSHHPgHPmrSMP4gLPoD2w2O iXm/zlQQmKQyJvgsPBq4PC9trRt3OwoRZ7PeHO4VJM4GB w
+04-11 20:46:59.802  1478  8460 E reader_network_req: I2WYFRfVZzcd6XTWRP02L9GlCC rKkMjZ9lOCImJ7 DngAXiwmwwaVxWbbOL9gkb0pjs6zAASlTV
+04-11 20:46:59.802  1478  8460 E reader_network_req: Uyk9vt/0hCP4tYRO5Bh0CLW2e30fu7gjkMNTAhlAwiI6GnXvc9DarHzH8971e0sqYzuZ GeQPKJb
+04-11 20:46:59.802  1478  8460 E reader_network_req: RYqF1S akdJP0hxxuqMVezUzJIbdfQX7UQLbKW4JkDPZ zGimGIkelpCvm9GmIBJT14lUToKPmer
+04-11 20:46:59.802  1478  8460 E reader_network_req: N 97nn6pvBCk0gvdnAHVVyXmaBsBifCANoryQSeNq 2g6Kt3McxYtxiPZj9nhZyA X12Up7DEyN7
+04-11 20:46:59.802  1478  8460 E reader_network_req: 2NS 1IozgKxvBVnHxgqa6ObkBXM 9Ay6afFaKd/yOTwGTDoob/UQutiWxTZZvezCMLu2czWJbnOE
+04-11 20:46:59.802  1478  8460 E reader_network_req: 1CfT cakeicnrJKPRMlVC3MNmDJQRasVKfa1Hs2ZQtc7b//eGQRQkIRwrtIxPiVi6B3ZOBX23cHz
+04-11 20:46:59.802  1478  8460 E reader_network_req: ojJpa5zo7W65YS/gdU V 2aI
+04-11 20:46:59.802  1478  8460 E reader_network_req: &createTime=1744384619799
+04-11 20:46:59.802  1478  8460 E reader_network_req: REQUEST END (4275-byte body)
+04-11 20:46:59.802  1478  8460 E reader_network_req:  
+04-11 20:46:59.803  1478  8460 E reader_network_resp: https://osservice.vmos.com/gather/apps/save?s=68f26c26cc5a7296fd9647e875a3bcad&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619801&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:59.803  1478  8460 E reader_network_resp: timestamp: 1744384619802
+04-11 20:46:59.803  1478  8460 E reader_network_resp: HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "osservice.vmos.com": No address associated with hostname
+04-11 20:46:59.803  1478  8460 E reader_network_resp:  
+04-11 20:46:59.805  1478  1478 E socket  : ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.805  1478  1478 E socket  : ║ Thread: main
+04-11 20:46:59.805  1478  1478 E socket  : ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.807  1478  1478 E socket  : ║ SocketServerUtils.creatServerSocket  (SocketServerUtils.java:172)
+04-11 20:46:59.808  1478  1478 E socket  : ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.808  1478  1478 E socket  : ║ 开启服务
+04-11 20:46:59.808  1478  1478 E socket  : ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.808  1478  1478 E readInputListenr: startInputListener
+04-11 20:46:59.811  1478  1478 E trajectoryType: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.811  1478  1478 E trajectoryType: ║ Thread: main
+04-11 20:46:59.811  1478  1478 E trajectoryType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.811  1478  1478 E trajectoryType: ║ PUserTrajectory.postEventReport  (PUserTrajectory.java:41)
+04-11 20:46:59.811  1478  1478 E trajectoryType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.811  1478  1478 E trajectoryType: ║ 1
+04-11 20:46:59.811  1478  1478 E trajectoryType: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.811  1478  9153 E socket  : ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.811  1478  9153 E socket  : ║ Thread: io-pool-1-thread-9
+04-11 20:46:59.811  1478  9153 E socket  : ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.814  1478  9153 E socket  : ║ SocketServerUtils$1.doInBackground  (SocketServerUtils.java:29)
+04-11 20:46:59.814  1478  9153 E socket  : ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.814  1478  9153 E socket  : ║ doInBackground
+04-11 20:46:59.814  1478  9153 E socket  : ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.814  1478  1478 D PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.814  1478  1478 D PRETTYLOGGER: ║ Thread: main
+04-11 20:46:59.814  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.815  1478  1478 D PRETTYLOGGER: ║ ApiManager$3.accept  (ApiManager.java:107)
+04-11 20:46:59.815  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.815  1478  1478 D PRETTYLOGGER: ║ doOnSubscribe（Okhttp）：main
+04-11 20:46:59.815  1478  1478 D PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.815  1478  8461 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:59.815  1478  8461 E VersionHelper: getRomVersion 
+04-11 20:46:59.816  1478  8461 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:59.816  1478  8461 D xiaozhishi_network_req: 1744384619816--intercept
+04-11 20:46:59.816  1478  8461 E reader_network_req: https://osservice.vmos.com/gather/trajectory/save?s=ef205b2a0fd5ff354e1a46eb2a12383e&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619815&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:59.816  1478  8461 E reader_network_req: timestamp: 1744384619816
+04-11 20:46:59.816  1478  8461 E reader_network_req: thread: 138775096
+04-11 20:46:59.816  1478  8461 E reader_network_req: Content-Type: application/json; charset=UTF-8
+04-11 20:46:59.816  1478  8461 E reader_network_req: Content-Length: 71
+04-11 20:46:59.816  1478  8461 E reader_network_req: androidApi: 1.0.31
+04-11 20:46:59.816  1478  8461 E reader_network_req: Access-Token: 
+04-11 20:46:59.816  1478  8461 E reader_network_req: User-ID: 917ec898382a587b
+04-11 20:46:59.816  1478  8461 E reader_network_req: Content-Type: application/json; charset=utf-8
+04-11 20:46:59.816  1478  8461 E reader_network_req: requestBody: {"msg":"CRVDhOuinIsfQ O5qZMuMqQhVQ1P5tyf\n","createTime":1744384619811}
+04-11 20:46:59.816  1478  8461 E reader_network_req: https://osservice.vmos.com/gather/trajectory/save?s=ef205b2a0fd5ff354e1a46eb2a12383e&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619815&u=917ec898382a587b&c=glb&v=100031&rv=0?msg=CRVDhOuinIsfQ O5qZMuMqQhVQ1P5tyf
+04-11 20:46:59.816  1478  8461 E reader_network_req: &createTime=1744384619811
+04-11 20:46:59.816  1478  8461 E reader_network_req: REQUEST END (71-byte body)
+04-11 20:46:59.816  1478  8461 E reader_network_req:  
+04-11 20:46:59.816  1478  1478 D SHENG   : samsung
+04-11 20:46:59.816  1478  1478 E getSystemProperty: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.816  1478  1478 E getSystemProperty: ║ Thread: main
+04-11 20:46:59.816  1478  1478 E getSystemProperty: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.816  1478  8461 E reader_network_resp: https://osservice.vmos.com/gather/trajectory/save?s=ef205b2a0fd5ff354e1a46eb2a12383e&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619815&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:59.816  1478  8461 E reader_network_resp: timestamp: 1744384619816
+04-11 20:46:59.816  1478  8461 E reader_network_resp: HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "osservice.vmos.com": No address associated with hostname
+04-11 20:46:59.816  1478  8461 E reader_network_resp:  
+04-11 20:46:59.816  1478  1478 E getSystemProperty: ║ GeneralUtil.getSystemProperty  (GeneralUtil.java:1658)
+04-11 20:46:59.816  1478  1478 E getSystemProperty: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.816  1478  1478 E getSystemProperty: ║ ro.dalvik.vm.native.bridge = 0
+04-11 20:46:59.816  1478  1478 E getSystemProperty: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.817  1478  1478 E trajectoryType: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.817  1478  1478 E trajectoryType: ║ Thread: main
+04-11 20:46:59.817  1478  1478 E trajectoryType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.818  1478  1478 E trajectoryType: ║ PUserTrajectory.postEventReport  (PUserTrajectory.java:41)
+04-11 20:46:59.818  1478  1478 E trajectoryType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.818  1478  1478 E trajectoryType: ║ 20
+04-11 20:46:59.818  1478  1478 E trajectoryType: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.818  1478  1478 D PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.818  1478  1478 D PRETTYLOGGER: ║ Thread: main
+04-11 20:46:59.818  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.818  1478  1478 D PRETTYLOGGER: ║ ApiManager$3.accept  (ApiManager.java:107)
+04-11 20:46:59.818  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.818  1478  1478 D PRETTYLOGGER: ║ doOnSubscribe（Okhttp）：main
+04-11 20:46:59.818  1478  1478 D PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.818  1478  1478 E trajectoryType: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.818  1478  1478 E trajectoryType: ║ Thread: main
+04-11 20:46:59.818  1478  1478 E trajectoryType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.819  1478  1478 E trajectoryType: ║ PUserTrajectory.postEventReport  (PUserTrajectory.java:41)
+04-11 20:46:59.819  1478  1478 E trajectoryType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.819  1478  1478 E trajectoryType: ║ 12
+04-11 20:46:59.819  1478  1478 E trajectoryType: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.819  1478  8460 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:59.819  1478  1478 D PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.819  1478  1478 D PRETTYLOGGER: ║ Thread: main
+04-11 20:46:59.819  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.819  1478  8460 E VersionHelper: getRomVersion 
+04-11 20:46:59.819  1478  1478 D PRETTYLOGGER: ║ ApiManager$3.accept  (ApiManager.java:107)
+04-11 20:46:59.819  1478  1478 D PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.819  1478  8460 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:59.819  1478  1478 D PRETTYLOGGER: ║ doOnSubscribe（Okhttp）：main
+04-11 20:46:59.819  1478  1478 D PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.819  1478  8460 D xiaozhishi_network_req: 1744384619819--intercept
+04-11 20:46:59.819  1478  8460 E reader_network_req: https://osservice.vmos.com/gather/trajectory/save?s=c87ef2f07184f856c9026c5907b7c235&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619819&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:59.819  1478  8460 E reader_network_req: timestamp: 1744384619819
+04-11 20:46:59.819  1478  8460 E reader_network_req: thread: 84482577
+04-11 20:46:59.819  1478  8460 E reader_network_req: Content-Type: application/json; charset=UTF-8
+04-11 20:46:59.819  1478  8460 E reader_network_req: Content-Length: 71
+04-11 20:46:59.819  1478  8460 E reader_network_req: androidApi: 1.0.31
+04-11 20:46:59.819  1478  8460 E reader_network_req: Access-Token: 
+04-11 20:46:59.819  1478  8460 E reader_network_req: User-ID: 917ec898382a587b
+04-11 20:46:59.819  1478  8460 E reader_network_req: Content-Type: application/json; charset=utf-8
+04-11 20:46:59.819  1478  8460 E reader_network_req: requestBody: {"msg":"CQO5E4JWRbesslmF9uL2Wm0kF 1hEwsy\n","createTime":1744384619818}
+04-11 20:46:59.819  1478  8460 E reader_network_req: https://osservice.vmos.com/gather/trajectory/save?s=c87ef2f07184f856c9026c5907b7c235&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619819&u=917ec898382a587b&c=glb&v=100031&rv=0?msg=CQO5E4JWRbesslmF9uL2Wm0kF 1hEwsy
+04-11 20:46:59.819  1478  8460 E reader_network_req: &createTime=1744384619818
+04-11 20:46:59.819  1478  8460 E reader_network_req: REQUEST END (71-byte body)
+04-11 20:46:59.819  1478  8460 E reader_network_req:  
+04-11 20:46:59.820  1478  1478 E getSystemProperty: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.820  1478  1478 E getSystemProperty: ║ Thread: main
+04-11 20:46:59.820  1478  1478 E getSystemProperty: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.820  1478  1478 E getSystemProperty: ║ GeneralUtil.getSystemProperty  (GeneralUtil.java:1658)
+04-11 20:46:59.820  1478  1478 E getSystemProperty: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.820  1478  1478 E getSystemProperty: ║ ro.product.cpu.abilist64 = arm64-v8a
+04-11 20:46:59.820  1478  8461 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:59.820  1478  1478 E getSystemProperty: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.820  1478  8460 E reader_network_resp: https://osservice.vmos.com/gather/trajectory/save?s=c87ef2f07184f856c9026c5907b7c235&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619819&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:59.820  1478  8460 E reader_network_resp: timestamp: 1744384619819
+04-11 20:46:59.820  1478  8460 E reader_network_resp: HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "osservice.vmos.com": No address associated with hostname
+04-11 20:46:59.820  1478  8460 E reader_network_resp:  
+04-11 20:46:59.820  1478  8461 E VersionHelper: getRomVersion 
+04-11 20:46:59.820  1478  1478 D getArchType: ╔════════════════════════════════════════════════════════════════════
+04-11 20:46:59.820  1478  1478 D getArchType: ║ Thread: main
+04-11 20:46:59.820  1478  1478 D getArchType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.820  1478  8461 W Settings: Setting android_id has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.
+04-11 20:46:59.820  1478  1478 D getArchType: ║ GeneralUtil.getArchType  (GeneralUtil.java:1667)
+04-11 20:46:59.820  1478  1478 D getArchType: ╟────────────────────────────────────────────────────────────────────
+04-11 20:46:59.820  1478  8461 D xiaozhishi_network_req: 1744384619820--intercept
+04-11 20:46:59.820  1478  1478 D getArchType: ║ CPU arch is 64bit
+04-11 20:46:59.820  1478  1478 D getArchType: ╚════════════════════════════════════════════════════════════════════
+04-11 20:46:59.820  1478  8461 E reader_network_req: https://osservice.vmos.com/gather/trajectory/save?s=6185cfeb948333556e3ff1f18694d55c&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619820&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:59.820  1478  8461 E reader_network_req: timestamp: 1744384619820
+04-11 20:46:59.820  1478  8461 E reader_network_req: thread: 138775096
+04-11 20:46:59.820  1478  8461 E reader_network_req: Content-Type: application/json; charset=UTF-8
+04-11 20:46:59.820  1478  8461 E reader_network_req: Content-Length: 71
+04-11 20:46:59.820  1478  8461 E reader_network_req: androidApi: 1.0.31
+04-11 20:46:59.820  1478  8461 E reader_network_req: Access-Token: 
+04-11 20:46:59.820  1478  8461 E reader_network_req: User-ID: 917ec898382a587b
+04-11 20:46:59.820  1478  8461 E reader_network_req: Content-Type: application/json; charset=utf-8
+04-11 20:46:59.820  1478  8461 E reader_network_req: requestBody: {"msg":"/jBEpxerDl37xjcnnXxvfc AmX3BhAo4\n","createTime":1744384619819}
+04-11 20:46:59.820  1478  8461 E reader_network_req: https://osservice.vmos.com/gather/trajectory/save?s=6185cfeb948333556e3ff1f18694d55c&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619820&u=917ec898382a587b&c=glb&v=100031&rv=0?msg=/jBEpxerDl37xjcnnXxvfc AmX3BhAo4
+04-11 20:46:59.820  1478  8461 E reader_network_req: &createTime=1744384619819
+04-11 20:46:59.820  1478  8461 E reader_network_req: REQUEST END (71-byte body)
+04-11 20:46:59.820  1478  8461 E reader_network_req:  
+04-11 20:46:59.820  1478  1478 E VersionHelper: getRomVersion 
+04-11 20:46:59.820  1478  1478 E UpdateController: checkUpdate VersionHelper.getRomVersion().versionCode:0
+04-11 20:46:59.820  1478  1478 E VersionHelper: getRomVersion 
+04-11 20:46:59.821  1478  1478 E LauncherUtil: isGLBVersion
+04-11 20:46:59.821  1478  8461 E reader_network_resp: https://osservice.vmos.com/gather/trajectory/save?s=6185cfeb948333556e3ff1f18694d55c&k=eb759cd6d8e975ec29b999b743123721&auth_ver=2&n=1744384619820&u=917ec898382a587b&c=glb&v=100031&rv=0 POST http/1.1
+04-11 20:46:59.821  1478  8461 E reader_network_resp: timestamp: 1744384619820
+04-11 20:46:59.821  1478  8461 E reader_network_resp: HTTP FAILED: java.net.UnknownHostException: Unable to resolve host "osservice.vmos.com": No address associated with hostname
+04-11 20:46:59.821  1478  8461 E reader_network_resp:  
+04-11 20:46:59.821  1478  1478 D GoogleObbUtil: fileName:main.100031.com.vmos.glb.obb
+04-11 20:46:59.821  1478  1478 D GoogleObbUtil: xf.mIsMain:true
+04-11 20:46:59.821  1478  1478 D GoogleObbUtil: xf.mFileVersion:100031
+04-11 20:46:59.821  1478  1478 D Helpers : doesFileExist fileName:main.100031.com.vmos.glb.obb  fileSize:301143063  deleteFileOnMismatch:false
+04-11 20:46:59.823  1478  1478 D Helpers : fileForNewFile PATH:/storage/emulated/0/Android/obb/com.vmos.glb/main.100031.com.vmos.glb.obb
+04-11 20:46:59.824  1478  1478 E LauncherUtil: isUseDefaultRom reuslt:false
+04-11 20:46:59.829  1478  1478 D GoogleObbUtil: startResult:2
+04-11 20:46:59.831  1478  1478 I Dialog  : mIsDeviceDefault = false, mIsSamsungBasicInteraction = false, isMetaDataInActivity = false
+04-11 20:46:59.835  1478  1478 D ScrollView: initGoToTop
+04-11 20:46:59.838  1478  1478 I DecorView: [INFO] isPopOver=false, config=false
+04-11 20:46:59.838  1478  1478 I DecorView: updateCaptionType >> DecorView@bba0a89[], isFloating=false, isApplication=true, hasWindowControllerCallback=false, hasWindowDecorCaption=false
+04-11 20:46:59.838  1478  1478 D DecorView: setCaptionType = 0, this = DecorView@bba0a89[]
+04-11 20:46:59.839  1478  1478 I DecorView: getCurrentDensityDpi: from app context. densityDpi=420 msg=resources_loaded
+04-11 20:46:59.839  1478  1478 E LauncherUtil: isGLBVersion
+04-11 20:46:59.839  1478  1478 D GoogleObbUtil: fileName:main.100031.com.vmos.glb.obb
+04-11 20:46:59.839  1478  1478 D GoogleObbUtil: xf.mIsMain:true
+04-11 20:46:59.839  1478  1478 D GoogleObbUtil: xf.mFileVersion:100031
+04-11 20:46:59.839  1478  1478 D Helpers : doesFileExist fileName:main.100031.com.vmos.glb.obb  fileSize:301143063  deleteFileOnMismatch:false
+04-11 20:46:59.840  1478  1478 D Helpers : fileForNewFile PATH:/storage/emulated/0/Android/obb/com.vmos.glb/main.100031.com.vmos.glb.obb
+04-11 20:46:59.841  1478  1478 E LauncherUtil: isUseDefaultRom reuslt:false
+04-11 20:46:59.848  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: setView = com.android.internal.policy.DecorView@bba0a89 TM=true
+04-11 20:46:59.850  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: stopped(false) old=false
+04-11 20:46:59.850  1478  1478 D CrashReport: >>> com.vmos.glb.LauncherActivity onResumed <<<
+04-11 20:46:59.851  1478  1478 I CrashReport-Native: Set native info: isAppForeground(true)
+04-11 20:46:59.851  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb parent=null callers=com.android.internal.policy.DecorView.setVisibility:4295 android.app.ActivityThread.handleResumeActivity:5383 android.app.servertransaction.ResumeActivityItem.execute:54 android.app.servertransaction.ActivityTransactionItem.execute:45 android.app.servertransaction.TransactionExecutor.executeLifecycleState:176 
+04-11 20:46:59.851  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@73037ff[]
+04-11 20:46:59.852  1478  9157 E preferencesSaveCall: saveParam: SPGETAPPJSON
+04-11 20:46:59.856  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: setView = com.android.internal.policy.DecorView@73037ff TM=true
+04-11 20:46:59.856  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:46:59.856  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@73037ff[LauncherActivity]
+04-11 20:46:59.859  1478  1478 W System.err: java.io.IOException: Address already in use
+04-11 20:46:59.861  1478  1478 W System.err: 	at android.net.LocalSocketImpl.bindLocal(Native Method)
+04-11 20:46:59.861  1478  1478 W System.err: 	at android.net.LocalSocketImpl.bind(LocalSocketImpl.java:275)
+04-11 20:46:59.861  1478  1478 W System.err: 	at android.net.LocalServerSocket.<init>(LocalServerSocket.java:49)
+04-11 20:46:59.861  1478  1478 W System.err: 	at com.vmos.glb.socket.SocketManager$3.doInBackground(SocketManager.java:148)
+04-11 20:46:59.861  1478  1478 W System.err: 	at com.vmos.glb.socket.ThreadUtils$Task.run(ThreadUtils.java:997)
+04-11 20:46:59.861  1478  1478 W System.err: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+04-11 20:46:59.861  1478  1478 W System.err: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+04-11 20:46:59.861  1478  1478 W System.err: 	at java.lang.Thread.run(Thread.java:1012)
+04-11 20:46:59.861  1478  1478 W System.err: 	at com.vmos.glb.socket.ThreadUtils$UtilsThreadFactory$1.run(ThreadUtils.java:1071)
+04-11 20:46:59.861  1478  1478 E onFail  : onFail: Address already in use
+04-11 20:46:59.861  1478  1478 W System.err: java.io.IOException: Address already in use
+04-11 20:46:59.861  1478  1478 W System.err: 	at android.net.LocalSocketImpl.bindLocal(Native Method)
+04-11 20:46:59.861  1478  1478 W System.err: 	at android.net.LocalSocketImpl.bind(LocalSocketImpl.java:275)
+04-11 20:46:59.861  1478  1478 W System.err: 	at android.net.LocalServerSocket.<init>(LocalServerSocket.java:49)
+04-11 20:46:59.861  1478  1478 W System.err: 	at com.vmos.glb.socket.SocketServerUtils$1.doInBackground(SocketServerUtils.java:30)
+04-11 20:46:59.861  1478  1478 W System.err: 	at com.vmos.glb.socket.ThreadUtils$Task.run(ThreadUtils.java:997)
+04-11 20:46:59.861  1478  1478 W System.err: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+04-11 20:46:59.861  1478  1478 W System.err: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+04-11 20:46:59.861  1478  1478 W System.err: 	at java.lang.Thread.run(Thread.java:1012)
+04-11 20:46:59.861  1478  1478 W System.err: 	at com.vmos.glb.socket.ThreadUtils$UtilsThreadFactory$1.run(ThreadUtils.java:1071)
+04-11 20:46:59.873  1478  1535 I ViewRootImpl@a32d2af[LauncherActivity]: Resizing android.view.ViewRootImpl@343c59f: frame=[0,685][1080,1655] reportDraw=true forceLayout=false backDropFrame=Rect(0, 0 - 1080, 970)
+04-11 20:46:59.876  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: Relayout returned: old=(0,0,1080,2340) new=(0,685,1080,1655) req=(1079,970)0 dur=5 res=0x7 s={true 493395013632} ch=true fn=-1
+04-11 20:46:59.877  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:46:59.877  1478  1478 D ScrollView:  onsize change changed 
+04-11 20:46:59.878  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11442 android.view.ViewRootImpl.performTraversals:4198 android.view.ViewRootImpl.doTraversal:2924 
+04-11 20:46:59.878  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=false reportNextDraw=true hasBlurUpdates=false
+04-11 20:46:59.878  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Creating frameCompleteCallback
+04-11 20:46:59.880  1478  1614 D ViewRootImpl@a32d2af[LauncherActivity]: Received frameDrawingCallback frameNum=1. Creating transactionCompleteCallback=false
+04-11 20:46:59.889  1478  1540 D ViewRootImpl@a32d2af[LauncherActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=1 lastAttemptedDrawFrameNum=1
+04-11 20:46:59.905  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) req=(1080,2340)0 dur=5 res=0x7 s={true 493395709952} ch=true fn=-1
+04-11 20:46:59.906  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:46:59.911  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11442 android.view.ViewRootImpl.performTraversals:4198 android.view.ViewRootImpl.doTraversal:2924 
+04-11 20:46:59.911  1478  1478 D ViewRootImpl@e8b81c1[LauncherActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=false reportNextDraw=true hasBlurUpdates=false
+04-11 20:46:59.911  1478  1478 D ViewRootImpl@e8b81c1[LauncherActivity]: Creating frameCompleteCallback
+04-11 20:46:59.912  1478  1613 D ViewRootImpl@e8b81c1[LauncherActivity]: Received frameDrawingCallback frameNum=1. Creating transactionCompleteCallback=false
+04-11 20:46:59.921  1478  1540 D ViewRootImpl@e8b81c1[LauncherActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=1 lastAttemptedDrawFrameNum=1
+04-11 20:46:59.923  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:46:59.923  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: [DP] rdf()
+04-11 20:46:59.923  1478  1478 D ViewRootImpl@e8b81c1[LauncherActivity]: reportDrawFinished (fn: -1) 
+04-11 20:46:59.923  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:46:59.923  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] rdf()
+04-11 20:46:59.923  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: reportDrawFinished (fn: -1) 
+04-11 20:46:59.924  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: MSG_WINDOW_FOCUS_CHANGED 0 1
+04-11 20:46:59.939  1478  1478 I LicenseChecker: Binding to licensing service.
+04-11 20:46:59.961  1478  8987 W Choreographer: Frame time is 0.061352998 ms in the future!  Check that graphics HAL is generating vsync timestamps using the correct timebase.
+04-11 20:46:59.976  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: handleResized, msg = 5 frames=ClientWindowFrames{frame=[0,685][1080,1655] display=[0,0][1080,2340] backdrop=[0,0][1080,970]} forceNextWindowRelayout=false displayId=0 frameChanged=false backdropFrameChanged=true configChanged=false displayChanged=false mNextDrawUseBlastSync=false mergedConfiguration={mGlobalConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.777 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0} mOverrideConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.1 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0}}
+04-11 20:46:59.977  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11442 android.view.ViewRootImpl.handleResized:2235 android.view.ViewRootImpl.access$1200:303 
+04-11 20:46:59.983  1478  1535 I ViewRootImpl@a32d2af[LauncherActivity]: Resizing android.view.ViewRootImpl@343c59f: frame=[0,726][1080,1613] reportDraw=true forceLayout=true backDropFrame=Rect(0, 0 - 1080, 887)
+04-11 20:46:59.988  1478  1478 D InsetsSourceConsumer: ensureControlAlpha: for ITYPE_STATUS_BAR on com.vmos.glb/com.vmos.glb.LauncherActivity
+04-11 20:46:59.989  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: Relayout returned: old=(0,685,1080,1655) new=(0,726,1080,1613) req=(1079,887)0 dur=10 res=0x81 s={true 493395013632} ch=false fn=2
+04-11 20:46:59.989  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Relayout called with blastSync
+04-11 20:46:59.990  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:46:59.990  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:46:59.991  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:46:59.992  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=true reportNextDraw=true hasBlurUpdates=false
+04-11 20:46:59.992  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Creating frameCompleteCallback
+04-11 20:46:59.993  1478  1614 D ViewRootImpl@a32d2af[LauncherActivity]: Received frameDrawingCallback frameNum=2. Creating transactionCompleteCallback=true
+04-11 20:47:00.009  1478  1540 D ViewRootImpl@a32d2af[LauncherActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=2 lastAttemptedDrawFrameNum=2
+04-11 20:47:00.010  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:47:00.010  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] rdf()
+04-11 20:47:00.010  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: reportDrawFinished (fn: 2) 
+04-11 20:47:00.012  1478  1478 E DownloadGoogleRomView: onDownloadStateChanged newState:2
+04-11 20:47:00.017  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: MSG_WINDOW_FOCUS_CHANGED 1 1
+04-11 20:47:00.018  1478  1478 D InputMethodManager: startInputInner - Id : 0
+04-11 20:47:00.018  1478  1478 I InputMethodManager: startInputInner - mService.startInputOrWindowGainedFocus
+04-11 20:47:00.027  1478  1478 I LicenseChecker: Calling checkLicense on service for com.vmos.glb
+04-11 20:47:00.027  1478  1478 I LicenseChecker: Start monitoring timeout.
+04-11 20:47:00.070  1478  1634 D ViewRootImpl@a32d2af[LauncherActivity]: Received transactionCompleteCallback frameNum=2
+04-11 20:47:00.070  1478  1487 D InputTransport: Input channel destroyed: 'ClientS', fd=122
+04-11 20:47:00.071  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:47:00.073  1478  1487 D InputTransport: Input channel destroyed: 'ClientS', fd=105
+04-11 20:47:00.073  1478  1487 D InputTransport: Input channel destroyed: 'ClientS', fd=113
+04-11 20:47:00.098  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Scheduling a traversal=false due to a previous skipped traversal.
+04-11 20:47:00.099  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: handleResized, msg = 5 frames=ClientWindowFrames{frame=[0,726][1080,1613] display=[0,0][1080,2340] backdrop=[0,0][1080,887]} forceNextWindowRelayout=true displayId=0 frameChanged=false backdropFrameChanged=true configChanged=false displayChanged=false mNextDrawUseBlastSync=false mergedConfiguration={mGlobalConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.777 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0} mOverrideConfig={1.1 405mcc870mnc [en_GB] ldltr sw411dp w411dp h859dp 420dpi nrml long port night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2340) mAppBounds=Rect(0, 83 - 1080, 2340) mMaxBounds=Rect(0, 0 - 1080, 2340) mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0 mPopOver=off mFreeformTaskPinningState=unpinned} s.1 fontWeightAdjustment=0 ff=0 bf=0 bts=0 enb/d themeSeq=0}}
+04-11 20:47:00.099  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11442 android.view.ViewRootImpl.handleResized:2235 android.view.ViewRootImpl.access$1200:303 
+04-11 20:47:00.106  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: Relayout returned: old=(0,726,1080,1613) new=(0,726,1080,1613) req=(1079,887)0 dur=5 res=0x1 s={true 493395013632} ch=false fn=3
+04-11 20:47:00.107  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:47:00.107  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=false reportNextDraw=true hasBlurUpdates=false
+04-11 20:47:00.107  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Creating frameCompleteCallback
+04-11 20:47:00.107  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:47:00.107  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:47:00.108  1478  1613 D ViewRootImpl@a32d2af[LauncherActivity]: Received frameDrawingCallback frameNum=3. Creating transactionCompleteCallback=false
+04-11 20:47:00.124  1478  1540 D ViewRootImpl@a32d2af[LauncherActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=3 lastAttemptedDrawFrameNum=3
+04-11 20:47:00.125  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:47:00.125  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] rdf()
+04-11 20:47:00.125  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: reportDrawFinished (fn: 3) 
+04-11 20:47:00.170  1478  1478 D InsetsSourceConsumer: ensureControlPosition: Point(0, 2214) for ITYPE_NAVIGATION_BAR on com.vmos.glb/com.vmos.glb.LauncherActivity from android.view.InsetsSourceConsumer.notifyAnimationFinished:384
+04-11 20:47:00.362  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: handleAppVisibility mAppVisible=true visible=false
+04-11 20:47:00.375  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:47:00.375  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:47:00.375  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:47:00.381  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: Relayout returned: old=(0,83,1080,2340) new=(0,83,1080,2340) req=(1080,2257)8 dur=4 res=0x5 s={false 0} ch=true fn=9
+04-11 20:47:00.381  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: stopped(true) old=false
+04-11 20:47:00.382  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@e876e0[NewSurActivity]
+04-11 20:47:00.382  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@e876e0[NewSurActivity]
+04-11 20:47:00.382  1478  1478 D CrashReport: >>> com.vmos.activity.NewSurActivity onDestroyed <<<
+04-11 20:47:00.394  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@e876e0[NewSurActivity]
+04-11 20:47:00.394  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:47:00.395  1478  1478 I ViewRootImpl@9685536[NewSurActivity]: dispatchDetachedFromWindow
+04-11 20:47:00.399  1478  1478 D InputTransport: Input channel destroyed: '115aca ', fd=114
+04-11 20:47:00.782  1478  9161 I LicenseChecker: Received response.
+04-11 20:47:00.783  1478  9161 I LicenseChecker: Clearing timeout.
+04-11 20:47:00.783  1478  9161 E LicenseValidator: publicKey:OpenSSLRSAPublicKey{modulus=959395cd40bb59fc52f2ddfb352220fd65717e7056ffc4743bb7e99c35f0d4c72eaf2f98bfb532e16cdf9e9f6245de797b7fe583180c7f2c667fc67744dd7e0362ec7cd9f94993d04fe4f52a5d919f9159ab3e71562169ccefee74d953bf16f2bed2e73867a21bde7969d57dd85d86b0573827206bcba5ee12c96211130a0d9b82abddd933109a6ffc5b38120b6b2722d193ccde68f7132e2b1025fdc0cafc5b8d6a85c75d4afd346b5b447ad08a6f7bbc7526d77fbfee7e248ce80bbb575d0a9f107da5f43d7865efc7aee97e47175e8fd488dbf88f0415cd158c69837be8669394f48d6a11a20965b3aac058ede379a6abda749ea838e04ca8f38e9b0b4461,publicExponent=10001}
+04-11 20:47:00.783  1478  9161 E LicenseValidator: responseCode:3
+04-11 20:47:00.784  1478  9161 E LicenseValidator: signedData:3|-1729656511|com.vmos.glb|100031|ANlOHQOMnqYkVoaiOPFZPV+fTWeOenL0wA==|1744384621940
+04-11 20:47:00.784  1478  9161 E LicenseValidator: signature:
+04-11 20:47:00.784  1478  9161 D DownloaderService: applicationError errorCode:3
+04-11 20:47:00.784  1478  1478 E DownloadGoogleRomView: onDownloadStateChanged newState:16
+04-11 20:47:01.865  1478  1478 E DownloadGoogleRomView: onServiceConnected
+04-11 20:47:01.865  1478  1478 E DownloadGoogleRomView: onDownloadStateChanged newState:16
+04-11 20:47:14.142  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: ViewPostIme pointer 0
+04-11 20:47:14.143  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:47:14.143  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:47:14.196  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:47:14.196  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:47:14.213  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:47:14.213  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:47:14.229  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:47:14.230  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:47:14.247  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:47:14.247  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:47:14.264  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:47:14.264  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:47:14.279  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:47:14.279  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:47:14.332  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:47:14.333  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:47:14.333  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:47:14.333  1478  1478 E PRETTYLOGGER: ║ KeyReceiver.onReceive  (KeyReceiver.java:43)
+04-11 20:47:14.333  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:47:14.333  1478  1478 E PRETTYLOGGER: ║ recentapp action=android.intent.action.CLOSE_SYSTEM_DIALOGS
+04-11 20:47:14.333  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:47:14.368  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: MSG_WINDOW_FOCUS_CHANGED 0 1
+04-11 20:47:15.261  1478  1478 D CrashReport: >>> com.vmos.glb.LauncherActivity onPaused <<<
+04-11 20:47:15.262  1478  1478 I CrashReport-Native: Set native info: isAppForeground(false)
+04-11 20:47:15.262  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: handleAppVisibility mAppVisible=true visible=false
+04-11 20:47:15.262  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: handleAppVisibility mAppVisible=true visible=false
+04-11 20:47:15.276  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:47:15.276  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:47:15.278  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:47:15.288  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: Relayout returned: old=(0,726,1080,1613) new=(0,726,1080,1613) req=(1080,887)8 dur=8 res=0x5 s={false 0} ch=true fn=4
+04-11 20:47:15.288  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:47:15.288  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:47:15.288  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:47:15.303  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) req=(1080,2340)8 dur=13 res=0x5 s={false 0} ch=true fn=2
+04-11 20:47:15.303  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: stopped(true) old=false
+04-11 20:47:15.304  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: stopped(true) old=false
+04-11 20:47:15.306  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:47:15.306  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@73037ff[LauncherActivity]
+04-11 20:47:15.313  1478  1478 D InputTransport: Input channel destroyed: 'ClientS', fd=140
+04-11 20:48:56.120  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:48:56.120  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:48:56.120  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:48:56.173  1478  1478 E PRETTYLOGGER: ║ KeyReceiver.onReceive  (KeyReceiver.java:43)
+04-11 20:48:56.173  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:48:56.173  1478  1478 E PRETTYLOGGER: ║ recentapp action=android.intent.action.CLOSE_SYSTEM_DIALOGS
+04-11 20:48:56.173  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:49:58.088  1478  1526 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.crashreport.biz.a$2
+04-11 20:49:58.098  1478  1526 D CrashReport: Uploading frequency will not be checked if SDK is in debug mode.
+04-11 20:49:58.174  1478  1526 D CrashReport: [UserInfo] There is no user info in local database.
+04-11 20:50:11.583  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:50:11.583  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:50:11.584  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.708  1478  1478 E PRETTYLOGGER: ║ MyReceiver.onReceive  (MyReceiver.java:21)
+04-11 20:50:11.708  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.708  1478  1478 E PRETTYLOGGER: ║ android.intent.action.PACKAGE_ADDED
+04-11 20:50:11.708  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:50:11.814  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:50:11.814  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:50:11.814  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.829  1478  1478 E PRETTYLOGGER: ║ LauncherActivity$1.Receiver  (LauncherActivity.java:153)
+04-11 20:50:11.829  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.829  1478  1478 E PRETTYLOGGER: ║ 预加载最新真机程序数据
+04-11 20:50:11.829  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:50:11.869  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:50:11.870  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:50:11.870  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.870  1478  1478 E PRETTYLOGGER: ║ MyReceiver.onReceive  (MyReceiver.java:21)
+04-11 20:50:11.870  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.871  1478  1478 E PRETTYLOGGER: ║ android.intent.action.PACKAGE_ADDED
+04-11 20:50:11.871  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:50:11.871  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:50:11.871  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:50:11.871  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.884  1478  1478 E PRETTYLOGGER: ║ LauncherActivity$1.Receiver  (LauncherActivity.java:153)
+04-11 20:50:11.884  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.884  1478  1478 E PRETTYLOGGER: ║ 预加载最新真机程序数据
+04-11 20:50:11.884  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:50:11.886  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:50:11.886  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:50:11.886  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.887  1478  1478 E PRETTYLOGGER: ║ MyReceiver.onReceive  (MyReceiver.java:21)
+04-11 20:50:11.887  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.887  1478  1478 E PRETTYLOGGER: ║ android.intent.action.PACKAGE_ADDED
+04-11 20:50:11.887  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:50:11.887  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:50:11.887  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:50:11.887  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.917  1478  1478 E PRETTYLOGGER: ║ LauncherActivity$1.Receiver  (LauncherActivity.java:153)
+04-11 20:50:11.917  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:50:11.917  1478  1478 E PRETTYLOGGER: ║ 预加载最新真机程序数据
+04-11 20:50:11.917  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:50:12.192  1478 11470 E preferencesSaveCall: saveParam: SPGETAPPJSON
+04-11 20:50:12.286  1478 11471 E preferencesSaveCall: saveParam: SPGETAPPJSON
+04-11 20:50:12.289  1478 11490 E preferencesSaveCall: saveParam: SPGETAPPJSON
+04-11 20:51:00.897  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:51:00.897  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:51:00.898  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:51:00.968  1478  1478 E PRETTYLOGGER: ║ KeyReceiver.onReceive  (KeyReceiver.java:43)
+04-11 20:51:00.968  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:51:00.968  1478  1478 E PRETTYLOGGER: ║ recentapp action=android.intent.action.CLOSE_SYSTEM_DIALOGS
+04-11 20:51:00.968  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:51:17.025  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:51:17.025  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:51:17.025  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:51:17.026  1478  1478 E PRETTYLOGGER: ║ KeyReceiver.onReceive  (KeyReceiver.java:43)
+04-11 20:51:17.026  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:51:17.027  1478  1478 E PRETTYLOGGER: ║ recentapp action=android.intent.action.CLOSE_SYSTEM_DIALOGS
+04-11 20:51:17.027  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:51:19.134  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: handleAppVisibility mAppVisible=false visible=true
+04-11 20:51:19.200  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: Relayout returned: old=(0,726,1080,1613) new=(0,726,1080,1613) req=(1080,887)0 dur=35 res=0x7 s={true 493395709952} ch=true fn=-1
+04-11 20:51:19.202  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:51:19.202  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11442 android.view.ViewRootImpl.performTraversals:4198 android.view.ViewRootImpl.doTraversal:2924 
+04-11 20:51:19.220  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=false reportNextDraw=true hasBlurUpdates=false
+04-11 20:51:19.221  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: Creating frameCompleteCallback
+04-11 20:51:19.235  1478  1614 D ViewRootImpl@a32d2af[LauncherActivity]: Received frameDrawingCallback frameNum=1. Creating transactionCompleteCallback=false
+04-11 20:51:19.247  1478  1540 D ViewRootImpl@a32d2af[LauncherActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=1 lastAttemptedDrawFrameNum=1
+04-11 20:51:19.248  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:51:19.248  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: [DP] rdf()
+04-11 20:51:19.248  1478  1478 D ViewRootImpl@a32d2af[LauncherActivity]: reportDrawFinished (fn: -1) 
+04-11 20:51:19.248  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: handleAppVisibility mAppVisible=false visible=true
+04-11 20:51:19.249  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: stopped(false) old=true
+04-11 20:51:19.249  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: stopped(false) old=true
+04-11 20:51:19.258  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:51:19.258  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@73037ff[LauncherActivity]
+04-11 20:51:19.258  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: stopped(false) old=false
+04-11 20:51:19.258  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: stopped(false) old=false
+04-11 20:51:19.262  1478  1478 D CrashReport: >>> com.vmos.glb.LauncherActivity onResumed <<<
+04-11 20:51:19.266  1478  1478 I CrashReport-Native: Set native info: isAppForeground(true)
+04-11 20:51:19.267  1478  1478 I CrashReport: [session] launch app one times (app in background 244 seconds and over 30 seconds)
+04-11 20:51:19.267  1478  1478 D CrashReport: [AsyncTaskHandler] Post a delay(time: 0ms) task: com.tencent.bugly.crashreport.biz.a$a
+04-11 20:51:19.267  1478  1478 I CrashReport: add a timer to upload hot start user info
+04-11 20:51:19.267  1478  1478 D CrashReport: [AsyncTaskHandler] Post a delay(time: 300000ms) task: com.tencent.bugly.crashreport.biz.a$a
+04-11 20:51:19.268  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:51:19.268  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@73037ff[LauncherActivity]
+04-11 20:51:19.268  1478  1528 D CrashReport: [UserInfo] Record user info.
+04-11 20:51:19.268  1478  1478 D InsetsSourceConsumer: ensureControlAlpha: for ITYPE_NAVIGATION_BAR on com.vmos.glb/com.vmos.glb.LauncherActivity
+04-11 20:51:19.269  1478  1478 D InsetsSourceConsumer: ensureControlAlpha: for ITYPE_STATUS_BAR on com.vmos.glb/com.vmos.glb.LauncherActivity
+04-11 20:51:19.272  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:51:19.277  1478  1528 D CrashReport: [Database] insert t_ui success.
+04-11 20:51:19.277  1478  1528 D CrashReport: [Database] insert t_ui success with ID: 5
+04-11 20:51:19.281  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) req=(1080,2340)0 dur=7 res=0x7 s={true 493395013632} ch=true fn=-1
+04-11 20:51:19.281  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11442 android.view.ViewRootImpl.performTraversals:4198 android.view.ViewRootImpl.doTraversal:2924 
+04-11 20:51:19.282  1478  1478 D ViewRootImpl@e8b81c1[LauncherActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=false reportNextDraw=true hasBlurUpdates=false
+04-11 20:51:19.282  1478  1478 D ViewRootImpl@e8b81c1[LauncherActivity]: Creating frameCompleteCallback
+04-11 20:51:19.282  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:51:19.296  1478  1613 D ViewRootImpl@e8b81c1[LauncherActivity]: Received frameDrawingCallback frameNum=1. Creating transactionCompleteCallback=false
+04-11 20:51:19.304  1478  1540 D ViewRootImpl@e8b81c1[LauncherActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=1 lastAttemptedDrawFrameNum=1
+04-11 20:51:19.305  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:51:19.305  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:51:19.305  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:51:19.312  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: Relayout returned: old=(0,726,1080,1613) new=(0,726,1080,1613) req=(1080,887)0 dur=5 res=0x1 s={true 493395709952} ch=false fn=2
+04-11 20:51:19.313  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:5000 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+04-11 20:51:19.313  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: [DP] rdf()
+04-11 20:51:19.313  1478  1478 D ViewRootImpl@e8b81c1[LauncherActivity]: reportDrawFinished (fn: -1) 
+04-11 20:51:19.375  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: MSG_WINDOW_FOCUS_CHANGED 1 1
+04-11 20:51:19.376  1478  1540 D OpenGLRenderer: eglCreateWindowSurface
+04-11 20:51:19.377  1478  1478 D InputMethodManager: startInputInner - Id : 0
+04-11 20:51:19.377  1478  1478 I InputMethodManager: startInputInner - mService.startInputOrWindowGainedFocus
+04-11 20:51:20.802  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: ViewPostIme pointer 0
+04-11 20:51:20.802  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:51:20.802  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:51:20.930  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:51:20.930  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:51:20.942  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:51:20.942  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:51:20.985  1478  1478 E PRETTYLOGGER: ╔════════════════════════════════════════════════════════════════════
+04-11 20:51:20.985  1478  1478 E PRETTYLOGGER: ║ Thread: main
+04-11 20:51:20.985  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:51:20.986  1478  1478 E PRETTYLOGGER: ║ KeyReceiver.onReceive  (KeyReceiver.java:43)
+04-11 20:51:20.986  1478  1478 E PRETTYLOGGER: ╟────────────────────────────────────────────────────────────────────
+04-11 20:51:20.986  1478  1478 E PRETTYLOGGER: ║ recentapp action=android.intent.action.CLOSE_SYSTEM_DIALOGS
+04-11 20:51:20.986  1478  1478 E PRETTYLOGGER: ╚════════════════════════════════════════════════════════════════════
+04-11 20:51:21.000  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: MSG_WINDOW_FOCUS_CHANGED 0 1
+04-11 20:51:21.887  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: ViewPostIme pointer 0
+04-11 20:51:21.888  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:51:21.888  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:51:21.891  1478  1478 D CrashReport: >>> com.vmos.glb.LauncherActivity onPaused <<<
+04-11 20:51:21.892  1478  1478 I CrashReport-Native: Set native info: isAppForeground(false)
+04-11 20:51:21.894  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: ignored. pkg=com.vmos.glb isActivity=false callers=com.android.internal.policy.DecorView.hasMultiSplitHandlerInNonFreeformMode:891 com.android.internal.policy.DecorView.dispatchTouchEvent:931 android.view.View.dispatchPointerEvent:15335 android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent:7820 android.view.ViewRootImpl$ViewPostImeInputStage.onProcess:7593 
+04-11 20:51:21.894  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:51:21.895  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: handleAppVisibility mAppVisible=true visible=false
+04-11 20:51:21.895  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: handleAppVisibility mAppVisible=true visible=false
+04-11 20:51:21.895  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: stopped(true) old=false
+04-11 20:51:21.896  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: stopped(true) old=false
+04-11 20:51:21.911  1478  1478 I MSHandlerLifeCycle: isMultiSplitHandlerRequested: windowingMode=1 isFullscreen=true isPopOver=false isHidden=false skipActivityType=false isHandlerType=true this: DecorView@73037ff[LauncherActivity]
+04-11 20:51:21.911  1478  1478 I MSHandlerLifeCycle: removeMultiSplitHandler: no exist. decor=DecorView@73037ff[LauncherActivity]
+04-11 20:51:21.912  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:51:21.912  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:51:21.912  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:51:21.926  1478  1478 I ViewRootImpl@a32d2af[LauncherActivity]: Relayout returned: old=(0,726,1080,1613) new=(0,726,1080,1613) req=(1080,887)8 dur=10 res=0x5 s={false 0} ch=false fn=-1
+04-11 20:51:21.926  1478  1540 D OpenGLRenderer: setSurface called with nullptr
+04-11 20:51:21.926  1478  1540 D OpenGLRenderer: setSurface() destroyed EGLSurface
+04-11 20:51:21.926  1478  1540 D OpenGLRenderer: destroyEglSurface
+04-11 20:51:21.947  1478  1478 I ViewRootImpl@e8b81c1[LauncherActivity]: Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) req=(1080,2340)8 dur=18 res=0x5 s={false 0} ch=false fn=-1
+04-11 20:51:21.947  1478  1478 D InputTransport: Input channel destroyed: 'ClientS', fd=112
